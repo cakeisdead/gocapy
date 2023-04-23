@@ -8,16 +8,16 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 class Credential:
     """Credential class"""
-    #region Settings
     TOKEN_PATH = "token.json"
     SECRET_PATH = "owo.json"
-    SCOPES = None
+    SCOPES = [
+            'https://www.googleapis.com/auth/calendar',
+            'https://www.googleapis.com/auth/calendar.events'
+        ]
     content = None
-    #endregion
 
-    def __init__(self, scopes_list):
+    def __init__(self):
         self.load_token(self.TOKEN_PATH)
-        self.SCOPES = scopes_list
 
     def load_token(self, token_path):
         """Checks if token already exists,
@@ -26,7 +26,7 @@ class Credential:
         completing authorization flow for the first time
         """
         if os.path.exists(token_path):
-            self.content = Credentials.from_authorized_user_file(token_path, SCOPES)
+            self.content = Credentials.from_authorized_user_file(token_path, self.SCOPES)
 
         if self.token_validation() == "failed":
             self.generate_token(self.SECRET_PATH, token_path)
@@ -55,7 +55,7 @@ class Credential:
         """
         Generate token when missing or expired
         """
-        flow = InstalledAppFlow.from_client_secrets_file(secret_path, SCOPES)
+        flow = InstalledAppFlow.from_client_secrets_file(secret_path, self.SCOPES)
         self.content = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open(token_path, 'w', encoding="utf8") as token:
