@@ -10,8 +10,6 @@ def load_json(path):
     return data
 
 if __name__ == "__main__":
-    #events = load_json("study_guide.json")
-    
     # Initialize credentials and calendar object
     creds = Credential()
     calendar = GoogleCalendar('primary', creds)
@@ -25,5 +23,16 @@ if __name__ == "__main__":
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
-        ##if (event['summary'] == "event name"):
-        ##    service.events().delete(calendarId='primary',eventId=event['id']).execute()
+
+    # Add events from json file
+    events = load_json("study_calendar.json")
+    for event in events:
+        # Map columns from file into corresponding variables
+        name = event["course"]
+        description = event["course"]
+        start = event["date"] + "T" + event["start_time"] + ":00.000"
+        end = event["date"] + "T" + event["end_time"] + ":00.000"
+        calendar.add_event(name, description, start, end, 6)
+
+    ##if (event['summary'] == "event name"):
+    ##    service.events().delete(calendarId='primary',eventId=event['id']).execute()

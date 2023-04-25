@@ -28,3 +28,34 @@ class GoogleCalendar:
             return events
         except HttpError as err:
             print(err)
+
+    def add_event(self, event_name, description, start, end, color=1):
+        """
+        Add a new event to the calendar
+        TODO create event dataclass?
+        """
+        event_body = {
+                    'summary': event_name,
+                    'description': description,
+                    'start': {
+                                'dateTime': start,
+                                'timeZone': 'CST',    
+                            },
+                    'end': {
+                                'dateTime': end,
+                                'timeZone': 'CST',
+                            },
+                    'colorId':color,
+                    'reminders': {
+                                    'useDefault': False,
+                                    'overrides': [
+                                    {'method': 'popup', 'minutes': 24 * 60},
+                                    {'method': 'popup', 'minutes': 72 * 60},
+                                    ],
+                                },
+        }
+        try:
+            event = self.resource.events().insert(calendarId=self.calendar_id, body=event_body).execute()
+            print (f"Created '{event_name}': {event.get('htmlLink')}")
+        except HttpError as err:
+            print(err)
