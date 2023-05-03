@@ -29,7 +29,7 @@ if __name__ == "__main__":
     for event in events:
         print(event)
         # delete events
-        calendar.delete_event(event['id'])
+        # calendar.delete_event(event['id'])
     
 
     # Add events from json file
