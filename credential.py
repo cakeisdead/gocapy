@@ -24,9 +24,13 @@ class Credential:
         Token contains user's access and refresh tokens
         and is created automatically after
         completing authorization flow for the first time
+        TODO not working if token.json does not exists or if token is expired
         """
         if os.path.exists(token_path):
             self.content = Credentials.from_authorized_user_file(token_path, self.SCOPES)
+        else:
+            self.generate_token(self.SECRET_PATH, token_path)
+            return
 
         if self.token_validation() == "failed":
             self.generate_token(self.SECRET_PATH, token_path)
@@ -36,7 +40,7 @@ class Credential:
         Check for token validity and refresh if possible
         """
         validation_result = "success"
-        if not self.content or not self.content.valid:
+        if self.content is not None or not self.content.valid:
             if self.content and self.content.expired and self.content.refresh_token:
                 try:
                     self.refresh_token()

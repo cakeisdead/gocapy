@@ -24,6 +24,14 @@ if __name__ == "__main__":
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
 
+    # Get events by name
+    events = calendar.get_events_by_title("Web Development")
+    for event in events:
+        print(event)
+        # delete events
+        calendar.delete_event(event['id'])
+    
+
     # Add events from json file
     events = load_json("study_calendar.json")
     for event in events:
@@ -32,7 +40,7 @@ if __name__ == "__main__":
         description = event["course"]
         start = event["date"] + "T" + event["start_time"] + ":00.000"
         end = event["date"] + "T" + event["end_time"] + ":00.000"
-        calendar.add_event(name, description, start, end, 6)
+        # calendar.add_event(name, description, start, end, 6)
 
     ##if (event['summary'] == "event name"):
     ##    service.events().delete(calendarId='primary',eventId=event['id']).execute()

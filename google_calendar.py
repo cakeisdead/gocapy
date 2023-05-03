@@ -17,6 +17,20 @@ class GoogleCalendar:
         except MutualTLSChannelError as err:
             print(err)
 
+    def get_events_by_title(self, event_title):
+        """
+        Return all upcoming events with a specific name
+        """
+        now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+        try:
+            events = self.resource.events().list(calendarId=self.calendar_id, timeMin=now,
+                                                 q=event_title).execute()
+            events = events.get('items', [])
+            return events
+        except HttpError as err:
+            print(err)
+
+
     def upcoming_events(self, number_of_events = 10):
         """Return a list of upcoming events"""
         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
@@ -59,3 +73,10 @@ class GoogleCalendar:
             print (f"Created '{event_name}': {event.get('htmlLink')}")
         except HttpError as err:
             print(err)
+
+    def delete_event(self, event_id):
+        """
+        Remove event from Calendar
+        """
+        ##if (event['summary'] == "event name"):
+        self.resource.events().delete(calendarId='primary',eventId=event_id).execute()
