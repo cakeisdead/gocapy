@@ -24,7 +24,6 @@ class Credential:
         Token contains user's access and refresh tokens
         and is created automatically after
         completing authorization flow for the first time
-        TODO not working if token.json does not exists or if token is expired
         """
         if os.path.exists(token_path):
             self.content = Credentials.from_authorized_user_file(token_path, self.SCOPES)

@@ -1,8 +1,48 @@
 """Read, Create or delete events from google calendar"""
 import datetime
+from dataclasses import dataclass
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import MutualTLSChannelError
+
+@dataclass
+class Event:
+    """Placeholder for an event"""
+    name: str
+    description: str
+    date: str
+    start_time: str = "00:00"
+    end_time: str = start_time
+    time_zone: str = "CST"
+    color: int = 8
+    """
+    (1, Lavender), (2, Sage), (3, Grape), 
+    (4, Flamingo), (5, Banana), (6, Tangerine), 
+    (7, Peacock), (8, Graphite), (9, Blueberry), 
+    (10, Basil), (11, Tomato),
+    """
+    def body(self):
+        """Generate the body of the event"""
+        return {
+                    'summary': self.name,
+                    'description': self.description,
+                    'start': {
+                                'dateTime': self.date + self.start_time,
+                                'timeZone': self.time_zone,    
+                            },
+                    'end': {
+                                'dateTime': self.date + self.end_time,
+                                'timeZone': self.time_zone,
+                            },
+                    'colorId':self.color,
+                    'reminders': {
+                                    'useDefault': False,
+                                    'overrides': [
+                                    {'method': 'popup', 'minutes': 24 * 60},
+                                    {'method': 'popup', 'minutes': 72 * 60},
+                                    ],
+                                },
+        }
 
 class GoogleCalendar:
     """interact with google calendar services"""
@@ -43,34 +83,15 @@ class GoogleCalendar:
         except HttpError as err:
             print(err)
 
-    def add_event(self, event_name, description, start, end, color=1):
+    def add_event(self, event):
         """
         Add a new event to the calendar
-        TODO create event dataclass?
         """
-        event_body = {
-                    'summary': event_name,
-                    'description': description,
-                    'start': {
-                                'dateTime': start,
-                                'timeZone': 'CST',    
-                            },
-                    'end': {
-                                'dateTime': end,
-                                'timeZone': 'CST',
-                            },
-                    'colorId':color,
-                    'reminders': {
-                                    'useDefault': False,
-                                    'overrides': [
-                                    {'method': 'popup', 'minutes': 24 * 60},
-                                    {'method': 'popup', 'minutes': 72 * 60},
-                                    ],
-                                },
-        }
         try:
-            event = self.resource.events().insert(calendarId=self.calendar_id, body=event_body).execute()
-            print (f"Created '{event_name}': {event.get('htmlLink')}")
+            new_event = self.resource.events().insert(
+                    calendarId=self.calendar_id,
+                    body=event.body()).execute()
+            print (f"Created '{event.name}': {new_event.get('htmlLink')}")
         except HttpError as err:
             print(err)
 

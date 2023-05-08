@@ -1,7 +1,7 @@
 """Add, Delete and List google calendar events from Python"""
 import json
 from credential import Credential
-from google_calendar import GoogleCalendar
+from google_calendar import GoogleCalendar, Event
 
 def load_json(path):
     """Load json file and return contents"""
@@ -30,17 +30,17 @@ if __name__ == "__main__":
         print(event)
         # delete events
         # calendar.delete_event(event['id'])
-    
 
     # Add events from json file
     events = load_json("study_calendar.json")
     for event in events:
-        # Map columns from file into corresponding variables
-        name = event["course"]
-        description = event["course"]
-        start = event["date"] + "T" + event["start_time"] + ":00.000"
-        end = event["date"] + "T" + event["end_time"] + ":00.000"
-        # calendar.add_event(name, description, start, end, 6)
-
-    ##if (event['summary'] == "event name"):
-    ##    service.events().delete(calendarId='primary',eventId=event['id']).execute()
+        eve = Event(
+            name = event["course"],
+            description = event["course"],
+            date = event["date"],
+            start_time = f"T{event['start_time']}:00.000",
+            end_time = f"T{event['start_time']}:00.000"
+        )
+        calendar.add_event(eve)
+        del eve
+        
